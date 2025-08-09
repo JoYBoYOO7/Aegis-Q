@@ -1,0 +1,79 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String // This remains hashed for user authentication
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  passwords Password[]
+  encryptionKeys EncryptionKey[]
+  kyberKeys KyberKey[]
+}
+
+model Password {
+  id            String   @id @default(uuid())
+
+  userId        String
+  user      User     @relation(fields: [userId], references: [id])
+
+  service       String
+  username      String
+  encryptedData String // Changed from password to encryptedData
+  iv            String // Initialization Vector for encryption
+  algorithm     String  @default("aes-256-gcm") // aes-256-gcm, kyber-768, aes-256-gcm-hybrid
+  metadata      Json?   // Additional encryption metadata (e.g., Kyber ciphertext)
+
+  keyId String? // Reference to the encryption key used (for AES)
+  key   EncryptionKey? @relation(fields: [keyId], references: [id])
+  
+  kyberKeyId String? // Reference to the Kyber key used (for PQ)
+  kyberKey   KyberKey? @relation(fields: [kyberKeyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([keyId])
+  @@index([kyberKeyId])
+  @@index([algorithm])
+  @@index([userId, service])
+}
+
+model EncryptionKey {
+  id        String        @id @default(uuid())
+  key       String // Store the encryption key securely
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  passwords Password[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([userId, active])
+}
+
+model KyberKey {
+  id          String   @id @default(uuid())
+  publicKey   Bytes    // Kyber public key (store raw bytes)
+  privateKey  Bytes    // Kyber private key (in production, encrypt this! stored as raw bytes)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  passwords   Password[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([userId, active])
+}
