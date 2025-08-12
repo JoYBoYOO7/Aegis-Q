@@ -503,8 +503,15 @@ export async function upsertKyberKey(userId: string) {
   } else {
     // Validate existing key
     try {
-      const publicKeyBuffer = Buffer.from(activeKey.publicKey, 'hex')
-      const privateKeyBuffer = Buffer.from(activeKey.privateKey, 'hex')
+      const toBuffer = (val: unknown): Buffer => {
+        if (typeof val === 'string') return Buffer.from(val, 'hex')
+        if (Buffer.isBuffer(val)) return val
+        if (val instanceof Uint8Array) return Buffer.from(val)
+        return Buffer.from(String(val), 'hex')
+      }
+
+      const publicKeyBuffer = toBuffer(activeKey.publicKey)
+      const privateKeyBuffer = toBuffer(activeKey.privateKey)
       
       if (publicKeyBuffer.length !== 1184) {
         console.warn('Invalid existing public key length, regenerating...')

@@ -32,16 +32,16 @@ const encryptionAlgorithms = [
     label: "AES-256-GCM (Standard)",
     description: "Fast, widely used symmetric encryption"
   },
-  {
-    value: "kyber-768",
-    label: "Kyber-768 (Post-Quantum)",
-    description: "Quantum-resistant key encapsulation"
-  },
-  {
-    value: "aes-256-gcm-hybrid",
-    label: "AES-256-GCM + Kyber (Hybrid)",
-    description: "Maximum security with both algorithms"
-  }
+  // {
+  //   value: "kyber-768",
+  //   label: "Kyber-768 (Post-Quantum)",
+  //   description: "Quantum-resistant key encapsulation"
+  // },
+  // {
+  //   value: "aes-256-gcm-hybrid",
+  //   label: "AES-256-GCM + Kyber (Hybrid)",
+  //   description: "Maximum security with both algorithms"
+  // }
 ];
 
 export default function AddPasswordDialog({
