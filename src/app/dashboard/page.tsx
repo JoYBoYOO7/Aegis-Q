@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "../server/user";
 import Dashboard from "./dashboard";

@@ -373,14 +373,20 @@ export async function getDecryptedPasswords(): Promise<DecryptedPassword[]> {
             if (!encPass.kyberKey) {
               throw new Error("No Kyber key found")
             }
-            keys.kyberPrivateKey = encPass.kyberKey.privateKey
+            keys.kyberPrivateKey = (Buffer.isBuffer(encPass.kyberKey.privateKey)
+              ? encPass.kyberKey.privateKey
+              : new Uint8Array(encPass.kyberKey.privateKey as any))
+              .toString('hex')
             break
 
           case 'aes-256-gcm-hybrid':
             if (!encPass.kyberKey) {
               throw new Error("No Kyber key found for hybrid decryption")
             }
-            keys.kyberPrivateKey = encPass.kyberKey.privateKey
+            keys.kyberPrivateKey = (Buffer.isBuffer(encPass.kyberKey.privateKey)
+              ? encPass.kyberKey.privateKey
+              : new Uint8Array(encPass.kyberKey.privateKey as any))
+              .toString('hex')
             break
 
           default:
